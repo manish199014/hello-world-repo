@@ -1,0 +1,31 @@
+name: Matrix configuration
+
+on:
+  # Trigger the workflow manually from the GitHub UI
+  workflow_dispatch:
+
+jobs:
+  # Job name must be defined clearly at this indentation level
+  deploy:
+    # 1. Define the build matrix
+    strategy:
+      matrix:
+        # Note: ubuntu-latest is often preferred for general use
+        os: [ubuntu-latest, ubuntu-20.04] 
+        # Note: You can't run 'docker run hello-world' in the same command as 'docker info' 
+        # so we pass the image name to a variable.
+        image_name: [hello-world, alpine]
+        # We drop 'windows-latest' because Docker commands on Windows runners are often complex
+        # and usually require a specific setup or the 'docker/desktop' environment.
+    
+    # 2. Define the runner environment based on the matrix variable 'os'
+    runs-on: ${{ matrix.os }} 
+    
+    steps:
+
+      - name: Check Docker Details
+        run: docker info
+
+      - name: Run image on ${{ matrix.os }}
+        # 3. Reference the matrix variable directly in the command argument
+        run: docker run ${{ matrix.image_name }}
